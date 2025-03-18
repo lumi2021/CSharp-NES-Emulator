@@ -6,7 +6,6 @@ using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 
 namespace Emulator;
-
 class Program
 {
 
@@ -23,7 +22,6 @@ class Program
         {
             Size = new(800, 600),
             Title = "Emulator",
-            //TransparentFramebuffer = true,
             WindowBorder = WindowBorder.Hidden,
             VSync = false
         };
