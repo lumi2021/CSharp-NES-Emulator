@@ -15,6 +15,8 @@ class Program
     public static IInputContext input = null!;
     public static ImGuiController imgui = null!;
 
+    public static event Action<double> Update = null!;
+
     static void Main(string[] args)
     { 
         WindowOptions winopt = WindowOptions.Default with
@@ -52,12 +54,6 @@ class Program
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
         
-        // FIXME wtf why this shit does not work
-        //var default_font = io.Fonts.AddFontFromFileTTF("./Assets/FragmentMono-Regular.ttf", 16f);
-        //ImGui.PushFont(default_font);
-
-        //io.FontGlobalScale = window.FramebufferSize.Length / 500;
-
         ImGui.LoadIniSettingsFromDisk("imgui.ini");
 
         gl.ClearColor(0.1f, 0.1f, 0.5f, 0f);
@@ -72,11 +68,6 @@ class Program
     
     private static void OnUpdate(double delta)
     {
-    }
-    private static void OnRender(double delta)
-    {
-        gl.Clear(ClearBufferMask.ColorBufferBit);
-
         imgui.Update((float)delta);
 
         var imGuiViewport = ImGui.GetMainViewport();
@@ -86,12 +77,24 @@ class Program
         ImGui.SetNextWindowViewport(imGuiViewport.ID);
 
         ImGuiWindowFlags dockSpaceFlags =
-        ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |
-        ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-        ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus | ImGuiWindowFlags.NoSavedSettings;
+            ImGuiWindowFlags.NoDocking |
+            ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoResize |
+            ImGuiWindowFlags.NoMove |
+            ImGuiWindowFlags.NoBringToFrontOnFocus |
+            ImGuiWindowFlags.NoNavFocus |
+            ImGuiWindowFlags.NoSavedSettings;
 
         ImGui.Begin("Emulator", dockSpaceFlags);
+
+        Update?.Invoke(delta);
+
         ImGui.End();
+
+    }
+    private static void OnRender(double delta)
+    {
+        gl.Clear(ClearBufferMask.ColorBufferBit);
 
         imgui.Render();
     }
