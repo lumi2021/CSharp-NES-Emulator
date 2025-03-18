@@ -1,4 +1,6 @@
 ﻿using System.Numerics;
+using Emulator.VirtalMachine;
+using Emulator.VirtualMachine;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
@@ -15,6 +17,7 @@ class Program
     public static ImGuiController imgui = null!;
 
     public static event Action<double> Update = null!;
+    public static event Action<double> Debug = null!;
 
     static void Main(string[] args)
     { 
@@ -54,7 +57,9 @@ class Program
         
         ImGui.LoadIniSettingsFromDisk("imgui.ini");
 
-        gl.ClearColor(0.1f, 0.1f, 0.5f, 0f);
+        gl.ClearColor(0.0f, 0.0f, 0.0f, 0f);
+
+        InitMachine();
     }
     private static void OnClose()
     {
@@ -64,6 +69,7 @@ class Program
         gl.Dispose();
     }
     
+
     private static void OnUpdate(double delta)
     {
         imgui.Update((float)delta);
@@ -80,12 +86,13 @@ class Program
             ImGuiWindowFlags.NoResize |
             ImGuiWindowFlags.NoMove |
             ImGuiWindowFlags.NoBringToFrontOnFocus |
-            ImGuiWindowFlags.NoNavFocus |
             ImGuiWindowFlags.NoSavedSettings;
 
         ImGui.Begin("Emulator", dockSpaceFlags);
+        ImGui.DockSpace(ImGui.GetID("MainDockSpace"), Vector2.Zero, ImGuiDockNodeFlags.PassthruCentralNode);
 
         Update?.Invoke(delta);
+        Debug?.Invoke(delta);
 
         ImGui.End();
 
@@ -93,7 +100,13 @@ class Program
     private static void OnRender(double delta)
     {
         gl.Clear(ClearBufferMask.ColorBufferBit);
-
         imgui.Render();
+    }
+
+
+    private static void InitMachine()
+    {
+        Cpu.Init();
+        Ppu.Init();
     }
 }
