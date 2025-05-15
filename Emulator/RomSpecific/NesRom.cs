@@ -10,7 +10,7 @@ public class NesRom
     private byte[] prgData = [];
     private byte[] chrData = [];
 
-    public Mapper mapper;
+    public Mapper Mapper { get; private set; }
 
     // Header data
     public byte PRGDataSize16KB => header[4];
@@ -43,7 +43,7 @@ public class NesRom
         chrData = data[b..(b + dl)];
         b += dl;
 
-        mapper = GetMapper((byte)((header[6] >> 4) | (header[7] & 0xF0)), this);
+        Mapper = GetMapper((byte)((header[6] >> 4) | (header[7] & 0xF0)), this);
     }
 
     private static Mapper GetMapper(byte mapper, NesRom parent)

@@ -4,20 +4,21 @@ namespace Emulator.Mappers;
 
 internal class NROM(NesRom r) : Mapper(r)
 {
-    protected override ushort ProcessAddress(ushort address, ReadingAs device)
+    
+    protected override byte Process_CPU_Read(ushort address)
     {
-        if (device == ReadingAs.CPU)
-        {
-
-            if (address >= 0x8000 && address <= 0xBFFF) return address;
-            else if (address >= 0xC000 && address <= 0xFFFF)
-            {
-                if (romReference.PRGDataSize16KB == 1) return (ushort)(address - 0x4000);
-                else return address;
-            }
-
-            return address;
-        }
-        else return address;
+        throw new NotImplementedException();
+    }
+    protected override void Process_CPU_Write(ushort address, byte value)
+    {
+        throw new NotImplementedException();
+    }
+    protected override byte Process_PPU_Read(ushort address)
+    {
+        throw new NotImplementedException();
+    }
+    protected override void Process_PPU_Write(ushort address, byte value)
+    {
+        throw new NotImplementedException();
     }
 }

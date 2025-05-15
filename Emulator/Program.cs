@@ -7,7 +7,9 @@ using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 
+
 namespace Emulator;
+
 class Program
 {
 
@@ -19,8 +21,23 @@ class Program
     public static event Action<double> Update = null!;
     public static event Action<double> Debug = null!;
 
-    static void Main(string[] args)
-    { 
+    public static string rom_path = null!;
+
+    static int Main(string[] args)
+    {
+
+        if (args.Length < 0)
+        {
+            Console.Error.Write("Error! No ROM path provided!");
+            return 1;
+        }
+        rom_path = args[0];
+        if (!File.Exists(rom_path))
+        {
+            Console.Error.Write("Error! Provided ROM not exists!");
+            return 1;
+        }
+
         WindowOptions winopt = WindowOptions.Default with
         {
             Size = new(800, 600),
@@ -32,6 +49,7 @@ class Program
         window = Window.Create(winopt);
 
         window.Load += OnLoad;
+
         window.Closing += OnClose;
         window.Update += OnUpdate;
         window.Render += OnRender;
@@ -39,6 +57,7 @@ class Program
         window.FramebufferResize += (s) => gl.Viewport(0, 0, (uint)s.X, (uint)s.Y);
 
         window.Run();
+        return 0;
     }
 
     private static void OnLoad()
@@ -47,19 +66,19 @@ class Program
         input = window.CreateInput();
 
         window.Center();
-        window.WindowState = WindowState.Maximized;
 
         imgui = new(gl, window, input);
 
         var io = ImGui.GetIO();
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
-        
+
         ImGui.LoadIniSettingsFromDisk("imgui.ini");
 
         gl.ClearColor(0.0f, 0.0f, 0.0f, 0f);
 
         InitMachine();
+        InsertCartriadge(rom_path);
     }
     private static void OnClose()
     {
@@ -68,7 +87,7 @@ class Program
         input.Dispose();
         gl.Dispose();
     }
-    
+
 
     private static void OnUpdate(double delta)
     {
@@ -108,5 +127,11 @@ class Program
     {
         Cpu.Init();
         Ppu.Init();
+
+        Cpu.Reset();
+    }
+    private static void InsertCartriadge(string rompath)
+    {
+        
     }
 }
