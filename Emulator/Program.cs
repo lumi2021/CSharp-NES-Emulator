@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Emulator.RomSpecific;
 using Emulator.VirtalMachine;
 using Emulator.VirtualMachine;
 using ImGuiNET;
@@ -42,7 +43,7 @@ class Program
         {
             Size = new(800, 600),
             Title = "Emulator",
-            WindowBorder = WindowBorder.Hidden,
+            //WindowBorder = WindowBorder.Hidden,
             VSync = false
         };
 
@@ -127,11 +128,11 @@ class Program
     {
         Cpu.Init();
         Ppu.Init();
-
-        Cpu.Reset();
     }
     private static void InsertCartriadge(string rompath)
     {
-        
+        var rom_data = File.ReadAllBytes(rom_path);
+        Rom.Load(rom_data);
+        Cpu.Reset();
     }
 }

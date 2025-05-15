@@ -55,8 +55,13 @@ public static class Cpu
     }
     public static void Reset()
     {
+        Console.WriteLine("CPU Reseted");
         Flags = 0;
-
+        progCounter = Bus.ReadAddr(0xFFFC);
+    }
+    public static void Interrupt()
+    {
+        
     }
 
     private static void Update(double delta)
@@ -67,11 +72,33 @@ public static class Cpu
     {
         ImGui.Begin("CPU");
 
+        ImGui.Text($"Running: {running && !flag_break}");
+
         ImGui.Text($"PC: {progCounter:X4}");
         ImGui.Text($"SP: {progCounter:X2}");
         ImGui.Text($"A:  {accumulator:X2}");
         ImGui.Text($"X:  {indexX:X2}");
         ImGui.Text($"Y:  {indexY:X2}");
+
+        // flags
+        ImGui.Text("Flags: "); ImGui.SameLine();
+        if (flag_negative) ImGui.Text("N"); else ImGui.TextDisabled("N"); ImGui.SameLine();
+        if (flag_overflow)   ImGui.Text("O"); else ImGui.TextDisabled("O"); ImGui.SameLine();
+        ImGui.TextDisabled("-"); ImGui.SameLine();
+        if (flag_break)      ImGui.Text("B"); else ImGui.TextDisabled("B"); ImGui.SameLine();
+        if (flag_decimal)    ImGui.Text("D"); else ImGui.TextDisabled("D"); ImGui.SameLine();
+        if (flag_interrupt)  ImGui.Text("I"); else ImGui.TextDisabled("I"); ImGui.SameLine();
+        if (flag_zero)       ImGui.Text("Z"); else ImGui.TextDisabled("Z"); ImGui.SameLine();
+        if (flag_carry)      ImGui.Text("C"); else ImGui.TextDisabled("C");
+
+        ImGui.Separator();
+
+        if (running) { if (ImGui.Button("stop")) running = false; }
+        else { if (ImGui.Button("run")) running = true; }
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("Reset")) Reset();
 
         ImGui.End();
     }
